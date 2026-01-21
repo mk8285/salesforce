@@ -3,44 +3,36 @@
 <head>
     <title>CallerDesk CTI</title>
 
-    <!-- Salesforce Open CTI library -->
-    <script src="/support/api/52.0/lightning/opencti_min.js"></script>
+    <!-- ✅ CORRECT: Load Open CTI from Salesforce -->
+    <script src="https://callerdesk5-dev-ed.develop.lightning.force.com/support/api/52.0/lightning/opencti_min.js"></script>
 </head>
 
 <body>
     <h3>CallerDesk Softphone</h3>
 
-    <button onclick="makeCall()">Call</button>
-    <button onclick="endCall()">End</button>
-
     <script>
-        // 🔑 REQUIRED: Enable Click-to-Dial
-        sforce.opencti.enableClickToDial({
-            callback: function (res) {
-                console.log("Click-to-Dial Enabled", res);
+        // Wait until Open CTI is available
+        window.onload = function () {
+            if (!window.sforce || !sforce.opencti) {
+                console.error("Open CTI not loaded");
+                return;
             }
-        });
 
-        // 🔑 REQUIRED: Listen for click-to-dial events
-        sforce.opencti.onClickToDial({
-            listener: function (payload) {
-                console.log("Click to Dial Payload:", payload);
+            // ✅ ENABLE CLICK TO DIAL (THIS ENABLES CALL ICON)
+            sforce.opencti.enableClickToDial({
+                callback: function (res) {
+                    console.log("Click to Dial Enabled", res);
+                }
+            });
 
-                const number = payload.number;
-                alert("Calling: " + number);
-
-                // 🔥 Call your telephony API here
-                // ex: Twilio / Exotel / CallerDesk backend
-            }
-        });
-
-        function makeCall() {
-            alert("Manual Call Triggered");
-        }
-
-        function endCall() {
-            alert("Call Ended");
-        }
+            // ✅ LISTEN FOR CLICK EVENTS
+            sforce.opencti.onClickToDial({
+                listener: function (payload) {
+                    console.log("Click to Dial Payload", payload);
+                    alert("Calling: " + payload.number);
+                }
+            });
+        };
     </script>
 </body>
 </html>
